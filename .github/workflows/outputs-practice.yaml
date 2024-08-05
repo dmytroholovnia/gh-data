@@ -33,7 +33,7 @@ jobs:
           path: dist
       - name: Output filename
         id: name
-        run: find dist/assets/*.js -type f -execdir echo 'js-filename={}' >> GITHUB_OUTPUT ';'
+        run: find dist/assets/*.js -type f -execdir echo 'js-filename={}' >> $GITHUB_OUTPUT ';'
 
   deploy:
     needs: build
