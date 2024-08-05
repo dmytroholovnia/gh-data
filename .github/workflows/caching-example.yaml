@@ -1,4 +1,4 @@
-name: Deploy website
+name: Cache example
 on:
   push:
     branches:
