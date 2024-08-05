@@ -1,0 +1,52 @@
+name: Outputs practice
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+      - name: Test code
+        run: npm run test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      file-name: ${{ steps.name.outputs.js-filename }}
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist
+      - name: Output filename
+        id: name
+        run: find dist/assets/*.js -type f -execdir echo 'js-filename={}' >> GITHUB_OUTPUT ';'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+      - name: Show files
+        run: ls -R
+      - name: Print JS filename
+        run: echo '${{ needs.build.outputs.file-name }}'
+      - name: Deploy
+        run: echo "Deploying..."
+
